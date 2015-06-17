@@ -1,0 +1,7 @@
+C:\Users\der\Documents\HomeApp\Test1\packages\Xamarin.UITest.0.7.2\tools\test-cloud.exe submit C:\Users\der\Documents\HomeApp\Test1\app\com.xamarin.samples.taskyandroid.apk 47efc36a9985164ab865bfc9b483b3af --devices 75368682 --series "master" --locale "en_GB" --user motrocco@hotmail.com --assembly-dir C:\Users\der\Documents\HomeApp\Test1\Test1\bin\Debug\
+
+
+
+
+
+Test1\packages\Xamarin.UITest.0.8.0\tools\test-cloud.exe submit Test1\app\com.xamarin.samples.taskyandroid.apk 47efc36a9985164ab865bfc9b483b3af --devices 75368682 --series "master" --locale "en_GB" --user motrocco@hotmail.com --assembly-dir Test1\Test1\bin\Debug\

@@ -1,0 +1,28 @@
+		/// <summary>
+		/// Scrolls on the element.
+		/// Direction means direction in which content will move to (i.e. opposite of finger direction)
+		/// </summary>
+		/// <param name="result">Result - AppResult bbject.</param>
+		/// <param name="direction">Direction.</param>
+		public static void ScrollOnElement(this AppResult result, Direction direction)
+		{
+			var rect = result.Rect;
+			switch (direction)
+			{
+			case Direction.Up:
+				StateInfo.App.DragCoordinates (rect.CenterX, rect.CenterY, rect.CenterX, rect.Y + rect.Height);
+				break;
+			case Direction.Down:
+				StateInfo.App.DragCoordinates (rect.CenterX, rect.CenterY, rect.CenterX, rect.Y);
+				break;
+			case Direction.Left:
+				StateInfo.App.DragCoordinates (rect.CenterX, rect.CenterY, rect.X + rect.Width, rect.CenterY);
+				break;
+			case Direction.Right:
+				StateInfo.App.DragCoordinates (rect.CenterX, rect.CenterY, rect.X, rect.CenterY);
+				break;
+			default:
+				Assert.Fail ("Provide a proper direction to scroll");
+				break;
+			}
+		}

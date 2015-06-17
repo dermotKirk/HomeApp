@@ -1,0 +1,26 @@
+﻿using Xamarin.UITest;
+
+namespace Test1
+{
+    public class AppInitializer
+    {
+        public static ITaskSystem StartApp(Platform platform)
+        {
+            //if (platform == Platform.Android)
+            //{
+            return new AndroidTaskSystem (
+                ConfigureApp
+                .Android
+                .ApkFile("com.xamarin.samples.taskyandroid.apk")
+                .StartApp());
+            //}
+
+            //return null; 
+            //return ConfigureApp
+                //.iOS
+                //.AppBundle("../../../../../Binaries/TaskyPro/iOS/TaskyiOS.app")
+               // .StartApp();
+        }
+    }
+}
+
