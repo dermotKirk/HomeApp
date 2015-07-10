@@ -132,12 +132,43 @@ namespace AIB.JSON.Handlers
     {
         public int Duration { get; set; }
         public bool FirstTimeBuyer { get; set; }
-        public float TargetPurchasePrice { get; set; }
-        public float TargetDeposit { get; set; }
-        public float GiftAmount { get; set; }
-        public double TargetSavings { get; set; }
+        public decimal TargetPurchasePrice { get; set; }
+        public decimal TargetDeposit { get; set; }
+        public decimal GiftAmount { get; set; }
+        public decimal TargetSavings { get; set; }
         public bool IsInvalid { get; set; }
         public string InvalidMessage { get; set; }
+    }
+
+    public class StressBudget
+    {
+        public float Price { get; set; }
+        public float Deposit { get; set; }
+        public float MonthlySavings { get; set; }
+        public float MonthlyRent { get; set; }
+        public int MortgageTerm { get; set; }
+    }
+
+    public class BudgetStressResponse
+    {
+        public StressBudget BudgetStressRequest { get; set; }
+        public decimal StressRate { get; set; }
+        public decimal StressAmount { get; set; }
+        public bool PassedStressTest { get; set; }
+        public Ratesforprice[] RatesForPrice { get; set; }
+    }
+
+    public class Ratesforprice
+    {
+        public decimal PropertyPrice { get; set; }
+        public int TermInYears { get; set; }
+        public decimal StressPercent { get; set; }
+        public decimal StressMonthlyAmount { get; set; }
+    }
+
+    public class ErrorResponse
+    {
+        public string ErrMessage { get; set; }
     }
 
 }
