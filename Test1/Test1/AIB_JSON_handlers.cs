@@ -7,6 +7,46 @@ using System.Threading.Tasks;
 namespace AIB.JSON.Handlers
 {
 
+    public class SearchResults
+    {
+        public string Id { get; set; }
+        public float Latitude { get; set; }
+        public float Longitude { get; set; }
+        public string GeoHash { get; set; }
+        public string GeoDirectoryMatch { get; set; }
+        public string DisplayName { get; set; }
+        public string Category { get; set; }
+        public float SquareMetres { get; set; }
+        public float Acres { get; set; }
+        public int Range { get; set; }
+        public string InfoLink { get; set; }
+    }
+
+    public class AmenitiesResultEnvelope
+    {
+        public string ResultSetType { get; set; }
+        public DateTime SearchTime { get; set; }
+        public string SearchQuery { get; set; }
+        public int TotalResults { get; set; }
+        public SearchResults[] SearchResults { get; set; }
+    }
+
+
+
+    public class bootstrapData
+    {
+        public County[] Counties { get; set; }
+        public string[] AmenityFilters { get; set; }
+        public string[] PropertyDetailFilters { get; set; }
+    }
+
+    public class County
+    {
+        public string Name { get; set; }
+        public string[] Localities { get; set; }
+    }
+
+
     public class Budget_Savings_JSON
     {
         public int Duration { get; set; }
@@ -43,16 +83,16 @@ namespace AIB.JSON.Handlers
         public DateTime SearchTime { get; set; }
         public string SearchQuery { get; set; }
         public int TotalResults { get; set; }
-        public PropertySearchResultArea[] PropertySearchResultArea { get; set; }
+        public POIResult[] SearchResults { get; set; }
     }
 
-    public class PropertySearchResultArea
+    public class POIResult
     {
         public string Id { get; set; }
         public float Latitude { get; set; }
         public float Longitude { get; set; }
         public string GeoHash { get; set; }
-        public object GeoDirectoryMatch { get; set; }
+        public decimal Acres { get; set; }
         public string DisplayName { get; set; }
         public string Category { get; set; }
         public float Price { get; set; }
