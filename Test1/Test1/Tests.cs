@@ -411,6 +411,54 @@ namespace Test1
         }
 
         [Test]
+        [Category("API"), Category("AmenitiesSearch"), Category("200HTTPSuccess")]
+        [TestCase("looking/amenity/51.9215752605773/-8.45968250977375/?filterBy=Education", 200, TestName = "5,7 - Amenities Search of schools, followed by a Valid Property Search in area of Amenity with default radius")]
+
+        public void API_PropertyDetailsFromAmenitiesAPISearches(string strURL, System.Net.HttpStatusCode HTTPStatusCode)
+        {
+            RestClient API_client = new RestClient();
+            var client = API_client.client("http://homeappapihost-dev.elasticbeanstalk.com/" + strURL);
+            // is the server available??            
+            var rClient = client.GetAsync("http://homeappapihost-dev.elasticbeanstalk.com/" + strURL);
+            HttpResponseMessage httpResponse = rClient.Result;
+            PropertySearchResultAreaWrapper psrSearchResults = null;
+            var AmenitiesResultEnvelope = httpResponse.Content.ReadAsAsync<AmenitiesResultEnvelope>();
+            if (AmenitiesResultEnvelope.Result.SearchResults.Count() > 1)
+            {
+                Console.WriteLine("Found " + AmenitiesResultEnvelope.Result.SearchResults.Count() + " amenities from the search");
+                Console.WriteLine("Attempting to retrieve the first property from link " + AmenitiesResultEnvelope.Result.SearchResults[0].InfoLink.ToString());
+                //as we passed in the exact cords for this school amenity, school should be the first one in the result set, we should have a range of 0,
+                //  ALWAYS, grab value to be validated at the end of the test.  Display Name should also match the expected school name.
+                var ZeroRangeValueExpected = AmenitiesResultEnvelope.Result.SearchResults[0].Range;
+                var SchoolNameExpected = AmenitiesResultEnvelope.Result.SearchResults[0].DisplayName;
+                // This is the school we want to perform our property searches around, we will default to 1000M radius
+                // and this means that the last property returned should ALWAYS have a range of less than 1001M from the school.
+                var propertySearchURL = "looking/property/" + AmenitiesResultEnvelope.Result.SearchResults[0].Latitude + "/" + AmenitiesResultEnvelope.Result.SearchResults[0].Longitude + "/";
+                rClient = client.GetAsync("http://homeappapihost-dev.elasticbeanstalk.com/" + propertySearchURL);
+                httpResponse = rClient.Result;
+                psrSearchResults = httpResponse.Content.ReadAsAsync<PropertySearchResultAreaWrapper>().Result;
+                var propertyResultCount = psrSearchResults.SearchResults.Count();
+                Console.WriteLine("Found " + psrSearchResults.SearchResults[propertyResultCount - 1].Range + " within 1000M of the school");
+                AssertAll.Execute(
+                    () => Assert.IsTrue(ZeroRangeValueExpected == 0, "Expected 0 range value as school cords were used but value of " + ZeroRangeValueExpected + " was found for the range value"),
+                    () => Assert.IsTrue(SchoolNameExpected == "SCOIL OILIBHEÍR, DUBLIN HILL, CORK", "Expected Display Name to show SCOIL OILIBHEÍR, DUBLIN HILL, CORK but value of " + SchoolNameExpected + " was found for the Display Name value"),
+                    () => Assert.IsTrue(httpResponse.StatusCode == System.Net.HttpStatusCode.OK, "Expected HTTP Code 200 OK but instead found " + httpResponse.StatusCode),
+                    () => Assert.IsTrue(HTTPStatusCode == System.Net.HttpStatusCode.OK, "Test Data setup for a " + HTTPStatusCode + " check but executed result produced a " + httpResponse.StatusCode + " HTTP code.  Check test data is correct or API call has changed"),
+                    () => Assert.IsTrue(psrSearchResults.SearchResults[propertyResultCount - 1].Range < 1001, "Range should be within default range of 100M.  Range was " + psrSearchResults.SearchResults[propertyResultCount - 1].Range),
+                    () => Assert.IsTrue(AmenitiesResultEnvelope.Result.SearchResults.Count() > 0, "Test Data expected greater than 0 amount of records counted but found " + AmenitiesResultEnvelope.Result.SearchResults.Count() + " Properties count.  Check test data is correct or API call has changed, or possibly there have are not ANY properties.")
+                    );
+            }
+            else
+            {
+                Console.WriteLine("There were no properties returned Count is " + AmenitiesResultEnvelope.Result.SearchResults.Count() + " check the views are deployed and the API is up and available.");
+                AssertAll.Execute(
+                    () => Assert.IsTrue(httpResponse.StatusCode == System.Net.HttpStatusCode.OK, "Expected HTTP Code 200 OK but instead found " + httpResponse.StatusCode),
+                    () => Assert.IsTrue(HTTPStatusCode == System.Net.HttpStatusCode.OK, "Test Data setup for a " + HTTPStatusCode + " check but executed result produced a " + httpResponse.StatusCode + " HTTP code.  Check test data is correct or API call has changed")
+                    );
+            }
+        }
+
+        [Test]
         [Category("API"), Category("Amenity"), Category("200HTTPSuccess")]
         [TestCase("looking/amenity/53.9908/-8.0636/10000", 200, 100, "Leitrim", TestName = "5,1,1 - Leitrim with a large radius, limit to 100 results")]
         [TestCase("looking/amenity/53.350140/-6.266155/250", 200, 100, "Dublin", TestName = "5,1,2 - Dublin with a small radius")]
@@ -446,9 +494,9 @@ namespace Test1
             AssertAll.Execute(
                 () => Assert.IsTrue(httpResponse.StatusCode == System.Net.HttpStatusCode.OK, "Expected HTTP Code 200 OK but instead found " + httpResponse.StatusCode),
                 () => Assert.IsTrue(HTTPStatusCode == System.Net.HttpStatusCode.OK, "Test Data setup for a " + HTTPStatusCode + " check but executed result produced a " + httpResponse.StatusCode + " HTTP code.  Check test data is correct or API call has changed"),
-                () => Assert.IsTrue(AmenititesResultEnvelope.Result.SearchResults.Count() == AmenititesCount, "Test Data expected " + AmenititesCount + " count but found " + AmenititesResultEnvelope.Result.SearchResults.Count() + " amenitites count.  Check test data is correct or API call has changed, or possibly there have been new amenitities been added to Geo Directory.")
+                () => Assert.IsTrue(AmenititesResultEnvelope.Result.SearchResults.Count() == AmenititesCount, "Test Data expected " + AmenititesCount + " count but found " + AmenititesResultEnvelope.Result.SearchResults.Count() + " amenities count.  Check test data is correct or API call has changed, or possibly there have been new amenities been added to Geo Directory.")
                 );
-            Console.WriteLine("Found " + AmenititesResultEnvelope.Result.SearchResults.Count() + " amenitites around " + CoOrdNamedLocation  + " with filtered call as seen in url " + strURL);
+            Console.WriteLine("Found " + AmenititesResultEnvelope.Result.SearchResults.Count() + " amenities around " + CoOrdNamedLocation  + " with filtered call as seen in URL " + strURL);
 
         }
 
