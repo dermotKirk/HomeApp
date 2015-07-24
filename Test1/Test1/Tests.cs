@@ -127,7 +127,7 @@ namespace Test1
 
             // Set BaseAddress
             _client.BaseAddress = new Uri(uri);
-            
+
             // Write action to console
             Console.WriteLine("Set Base Address to " + _client.BaseAddress.ToString());
             return _client;
@@ -205,7 +205,7 @@ namespace Test1
         [Category("Looking")]
         [Category("PropertyListingUsingLatLongRadius")]
         [Category("404HTTPExceptionsExceptions")]
-        [TestCase("looking/property/exxxxx/-9.9150/1000", 404, TestName = "2,1 - Letters used for Lat" )]
+        [TestCase("looking/property/exxxxx/-9.9150/1000", 404, TestName = "2,1 - Letters used for Lat")]
         [TestCase("looking/property/53.9311/-exxxxx/1000", 404, TestName = "2,2 - Letters used for Long")]
         [TestCase("looking/property/53.9311/-9.9150/exxxxx", 404, TestName = "2,3 - Letters used for Radius")]
         [TestCase("looking/property/£$^/-9.9150/1000", 404, TestName = "2,4 - Symbols used for Lat")]
@@ -218,7 +218,7 @@ namespace Test1
         public void API_PropertyListingHTTP404ErrorExceptions(string strURL, System.Net.HttpStatusCode HTTPStatusCode)
         {
             RestClient API_client = new RestClient();
-            var client = API_client.client("http://homeappapihost-dev.elasticbeanstalk.com/" + strURL);            
+            var client = API_client.client("http://homeappapihost-dev.elasticbeanstalk.com/" + strURL);
             // is the server available??            
             var rClient = client.GetAsync("http://homeappapihost-dev.elasticbeanstalk.com/" + strURL);
             HttpResponseMessage httpResponse = rClient.Result;
@@ -496,7 +496,7 @@ namespace Test1
                 () => Assert.IsTrue(HTTPStatusCode == System.Net.HttpStatusCode.OK, "Test Data setup for a " + HTTPStatusCode + " check but executed result produced a " + httpResponse.StatusCode + " HTTP code.  Check test data is correct or API call has changed"),
                 () => Assert.IsTrue(AmenititesResultEnvelope.Result.SearchResults.Count() == AmenititesCount, "Test Data expected " + AmenititesCount + " count but found " + AmenititesResultEnvelope.Result.SearchResults.Count() + " amenities count.  Check test data is correct or API call has changed, or possibly there have been new amenities been added to Geo Directory.")
                 );
-            Console.WriteLine("Found " + AmenititesResultEnvelope.Result.SearchResults.Count() + " amenities around " + CoOrdNamedLocation  + " with filtered call as seen in URL " + strURL);
+            Console.WriteLine("Found " + AmenititesResultEnvelope.Result.SearchResults.Count() + " amenities around " + CoOrdNamedLocation + " with filtered call as seen in URL " + strURL);
 
         }
 
@@ -576,7 +576,7 @@ namespace Test1
             // is the server available??            
             var rClient = client.PostAsJsonAsync<StressBudget>("http://homeappapihost-dev.elasticbeanstalk.com/" + strURL, testData);
             HttpResponseMessage httpResponse = rClient.Result;
-            
+
             var sTest = httpResponse.Content.ReadAsAsync<BudgetStressResponse>();
             var testDataResult = sTest.Result;
 
@@ -612,13 +612,13 @@ namespace Test1
             HttpResponseMessage httpResponse = rClient.Result;
 
             var sTest = httpResponse.Content.ReadAsStringAsync();
-            
+
             var testDataResult = sTest.Result;
             AssertAll.Execute(
             () => Assert.IsTrue(httpResponse.StatusCode == System.Net.HttpStatusCode.BadRequest, "Expected HTTP Code 400 BadRequest but instead found " + httpResponse.StatusCode),
             () => Assert.IsTrue(testDataResult.ToString().Contains(ContainsErrorMsg1) == true, "Expected Error Message Containing value of " + ContainsErrorMsg1 + " but error found instead is " + testDataResult),
             () => Assert.IsTrue(testDataResult.ToString().Contains(ContainsErrorMsg2) == true, "Expected Error Message Containing value of " + ContainsErrorMsg2 + " but error found instead is " + testDataResult)
-//            () => Assert.IsTrue(testDataResult.StressRate == StressRate, "Expected Stress Rate Amount of " + StressRate + " but found " + testDataResult.StressRate)
+            //            () => Assert.IsTrue(testDataResult.StressRate == StressRate, "Expected Stress Rate Amount of " + StressRate + " but found " + testDataResult.StressRate)
             );
         }
 
@@ -738,5 +738,42 @@ namespace Test1
             );
         }
     }
-}
 
+    [TestFixture]
+    public class API_CheckList
+    {
+
+        [Test]
+        [TestCase("system/checklist/TestChecklist/Template", 200, "TestChecklist", "CheckListTemplate", "Test Checklist", "Sub Text", "Disclaimer Text", TestName = "1,1 -  Call the test template")]
+        public void API_CheckListAPIReturned(string strURL, System.Net.HttpStatusCode HTTPStatusCode, string Id, string Type, string DisplayHeader, string IntroductionText, string FooterText)
+        {
+            var testData = new CheckList();
+            testData.Id = Id;
+            testData.Type = Type;
+            testData.DisplayHeader = DisplayHeader;
+            testData.IntroductionText = IntroductionText;
+            testData.FooterText = FooterText;
+
+
+            RestClient API_client = new RestClient();
+            var client = API_client.client("http://homeappapihost-dev.elasticbeanstalk.com/" + strURL);
+            // is the server available??            
+            var rClient = client.GetAsync("http://homeappapihost-dev.elasticbeanstalk.com/" + strURL); //, testData);
+            HttpResponseMessage httpResponse = rClient.Result;
+            //read Response as string as the response won't be JSON it will be a HTTP paged error    
+            var sTest = httpResponse.Content.ReadAsAsync<CheckList>();
+            var testDataResult = sTest.Result;
+
+            AssertAll.Execute(
+            () => Assert.IsTrue(httpResponse.StatusCode == HTTPStatusCode, "Found this response " + testDataResult + " returned from API.  Expected HTTP code " + HTTPStatusCode + "  but instead found " + httpResponse.StatusCode),
+            () => Assert.IsTrue(testDataResult.Id == testData.Id, "Expected Id of " + Id + " but found " + testDataResult.Id),
+            () => Assert.IsTrue(testDataResult.Type == testData.Type, "Expected Type to be " + Type + " but found " + testDataResult.Type),
+            () => Assert.IsTrue(testDataResult.DisplayHeader == testData.DisplayHeader, "Expected DisplayHeader of " + DisplayHeader + " but found" + testDataResult.DisplayHeader),
+            () => Assert.IsTrue(testDataResult.IntroductionText == IntroductionText, "Expected IntroductionText of " + IntroductionText + " but found " + testDataResult.IntroductionText),
+            () => Assert.IsTrue(testDataResult.FooterText == testData.FooterText, "Expected FooterText of " + FooterText + "but found " + testDataResult.FooterText) //,
+            //() => Assert.IsTrue(testDataResult.TargetSavings == Convert.ToDecimal(TargetSavings), "Expected TargetSavings Amount of " + TargetSavings + " but found " + testDataResult.TargetSavings)
+            );
+
+        }
+    }
+}

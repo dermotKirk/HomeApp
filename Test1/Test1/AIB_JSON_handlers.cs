@@ -211,4 +211,24 @@ namespace AIB.JSON.Handlers
         public string ErrMessage { get; set; }
     }
 
+
+    public class CheckList
+    {
+        public string Id { get; set; }
+        public string Type { get; set; }
+        public string DisplayHeader { get; set; }
+        public string IntroductionText { get; set; }
+        public string FooterText { get; set; }
+        public Question[] Questions { get; set; }
+    }
+
+    public class Question
+    {
+        public string QuestionId { get; set; }
+        public int SortOrder { get; set; }
+        public string Text { get; set; }
+        public string TipText { get; set; }
+    }
+
+
 }
